@@ -1,0 +1,5 @@
+# ignore idea stuff
+.idea
+
+# ignore macos stuff
+__MACOSX/
