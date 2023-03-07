@@ -1,13 +1,15 @@
 import colors
 
-from colors import LIGHT_GREY, DARK_GREY, LIGHT_RED, RED, BLACK
+from colors import LIGHT_GREY, DARK_GREY, LIGHT_RED, RED, BLACK, GREEN, WHITE
 
 
 class Settings:
     def __init__(self):
         self.screen_width, self.screen_height = 1200, 800
         self.bg_color = LIGHT_RED
-
+        self.title_bg_color = BLACK
+        self.title_space_text = WHITE
+        self.title_invaders_text = GREEN
         self.ship_image = 'images/ship.bmp'
         self.ship_speed = 3
         self.ship_limit = 3
@@ -15,6 +17,11 @@ class Settings:
         self.alien_image = 'images/alien.bmp'
         self.alien_speed_factor = 0.5
         self.fleet_drop_speed = 5
+
+        self.alien_one = ['images/enemy1-1.png', 'images/enemy1-2.png']
+        self.alien_two = ['images/enemy2-1.png', 'images/enemy2-1.png']
+        self.alien_three = ['images/enemy3-1.png', 'images/enemy3-2.png']
+        self.motherShip = 'images/motherShip.png'
 
         self.laser_speed_factor = 1.2
         self.laser_width = 10
