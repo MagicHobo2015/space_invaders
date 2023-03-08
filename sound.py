@@ -1,55 +1,34 @@
-import pygame as pg 
+import pygame as pg
+from laser import LaserType
 import time
 
 
 class Sound:
-    def __init__(self): 
-        self.pickup = pg.mixer.Sound('sounds/pickup.wav')
-        self.gameover = pg.mixer.Sound('sounds/gameover.wav')
-        self.lasers = pg.mixer.Sound('sounds/laser.wav')
-        self.alien_explo = pg.mixer.Sound('sounds/alien explosion.wav')
-        self.ship_explo = pg.mixer.Sound('sounds/ship_explosion.wav')
-        self.music_playing = False
-        pg.mixer.music.load('sounds/ride_of_the_valkyries.mp3')
-        pg.mixer.music.set_volume(0.05)
-        self.lasers.set_volume(0.01)
-        self.gameover.set_volume(0.05)
-        self.alien_explo.set_volume(0.02)
-        self.ship_explo.set_volume(0.02)
-                                             
-    def play_background(self): 
+    def __init__(self, bg_music):
+        pg.mixer.init()
+        pg.mixer.music.load(bg_music)
+        pg.mixer.music.set_volume(0.1)
+        alienlaser_sound = pg.mixer.Sound('sounds/alienlaser.wav')
+        alienlaser_sound.set_volume(0.1)
+        photontorpedo_sound = pg.mixer.Sound('sounds/photon_torpedo.wav')
+        photontorpedo_sound.set_volume(0.1)
+        gameover_sound = pg.mixer.Sound('sounds/gameover.wav')
+        gameover_sound.set_volume(0.1)
+        self.sounds = {'alienlaser': alienlaser_sound, 'photontorpedo': photontorpedo_sound,
+                       'gameover': gameover_sound}
+
+
+    def play_bg(self):
         pg.mixer.music.play(-1, 0.0)
-        self.music_playing = True
-        
-    def play_pickup(self): 
-        if self.music_playing: self.pickup.play()
 
-    def play_laser(self):
-        self.lasers.play()
-
-    def play_alien_explo(self):
-        self.alien_explo.play()
-
-    def play_ship_explo(self):
-        self.ship_explo.play()
-
-    def play_gameover(self):
-        if self.music_playing: 
-            self.stop_background()
-            self.gameover.play()
-            time.sleep(3.0)       # sleep until game over sound has finished
-        
-    def toggle_background(self):
-        if self.music_playing: 
-            self.stop_background()
-        else:
-            self.play_background()
-        self.music_playing = not self.music_playing
-        
-    def stop_background(self): 
+    def stop_bg(self):
         pg.mixer.music.stop()
-        self.music_playing = False 
-    
-        
-    
-    
+
+    def shoot_laser(self, type): 
+        pg.mixer.Sound.play(self.sounds['alienlaser' if type == LaserType.ALIEN else 'photontorpedo'])
+
+    def gameover(self): 
+        self.stop_bg() 
+        pg.mixer.music.load('sounds/gameover.wav')
+        self.play_bg()
+        time.sleep(2.8)

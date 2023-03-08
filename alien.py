@@ -1,114 +1,187 @@
+from ast import Or
+from email.headerregistry import HeaderRegistry
+from random import randint
 import pygame as pg
 from pygame.sprite import Sprite, Group
-from vector import Vector
+from laser import Lasers
+from timer import Timer
+
+
+class Alien(Sprite): 
+    alien_images = [[pg.transform.rotozoom(pg.image.load(f'images/alien_03-{n}.png'), 0, 2) for n in range(2)],
+                    [pg.transform.rotozoom(pg.image.load(f'images/alien__1{n}.png'), 0, 0.7) for n in range(2)],
+                    [pg.transform.rotozoom(pg.image.load(f'images/alien__2{n}.png'), 0, 0.7) for n in range(2)]]
+
+    aelist0 = [10, 10, 'blank']
+    aelist1 = [20, 20, 'blank']
+    aelist2 = [30, 30, 'blank']
+    alien_explosion_images = [[pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist2],
+                              [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist1] ,
+                              [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist0]]
+ 
+
+    def __init__(self, game, type, alien_number):
+        super().__init__()
+        self.screen = game.screen
+        self.settings = game.settings
+        self.image = pg.image.load('images/alien0.bmp')
+        self.rect = self.image.get_rect()
+        self.rect.y = self.rect.height
+        self.x = float(self.rect.x)
+        self.type = type
+        self.sb = game.scoreboard
+        self.dying = self.dead = False
+        
+        start_index = 0 if alien_number % 2 == 0 else 1
+        self.timer_normal = Timer(Alien.alien_images[type], start_index=start_index, delay=300)
+        self.timer_explosion = Timer(Alien.alien_explosion_images[type], delay=300, is_loop=False)
+        self.timer = self.timer_normal                                    
+
+    def check_edges(self): 
+        screen_rect = self.screen.get_rect()
+        return self.rect.right >= screen_rect.right or self.rect.left <= 0
+
+    def check_bottom_or_ship(self, ship):
+        screen_rect = self.screen.get_rect()
+        return self.rect.bottom >= screen_rect.bottom or self.rect.colliderect(ship.rect)
+
+    def hit(self):
+        if not self.dying:
+            self.dying = True
+            self.timer = self.timer_explosion
+            self.sb.increment_score()
+            self.sb.check_high_score()
+
+    def update(self): 
+        if self.timer == self.timer_explosion and self.timer.is_expired():
+            self.kill()
+        settings = self.settings
+        self.x += (settings.alien_speed * settings.fleet_direction)
+        self.rect.x = self.x
+        self.draw()
+
+    def draw(self): 
+        image = self.timer.image()
+        rect = image.get_rect()
+        rect.centerx, rect.centery = self.rect.centerx, self.rect.centery
+        self.screen.blit(image, rect)
 
 
 class Aliens:
-    def __init__(self, game):
+    def __init__(self, game): 
+        self.model_alien = Alien(game=game, type=0, alien_number=0)
         self.game = game
+        self.sb = game.scoreboard
+        self.aliens = Group()
+
+        self.ship_lasers = game.ship_lasers.lasers    # a laser Group
+        self.aliens_lasers = game.alien_lasers
+
         self.screen = game.screen
-        self.ship = game.ship
         self.settings = game.settings
-        self.aliens = Group()  # Initializes group object to hold the fleet of aliens
-        self.add(Alien(game=game))    # will change to add a bunch of Alien's
-        self.v = Vector(self.settings.alien_speed_factor, 0)  # Vector object to control the speed and direction of the
-        # aliens and the movement,
+        self.shoot_requests = 0
+        self.ship = game.ship
         self.create_fleet()
 
-    def add(self, alien): self.aliens.add(alien)
-
-    def create_fleet(self):  #
-        alien = Alien(game=self.game) # create an instance of an Alien
-        number_aliens_x = self.get_number_aliens_x(alien.rect.width)
-        number_rows = self.get_number_rows(self.ship.rect.height,
-                                           alien.rect.height)
-        for row_number in range(number_rows):
-            self.create_row(number_aliens_x, row_number)
-
-    def create_row(self, number_aliens_x, row_number):  # creates a series of alien objects using create_alien() method
-        # passing in the row number and the alien number within the row.
-        for n in range(number_aliens_x):
-            self.create_alien(n=n, row_number=row_number)
-
-    def get_number_aliens_x(self, alien_width): # Used to calculate the number of aliens tha can fit in a row and the
-        # number of rows that wil fit on the screen, respectively.
-        available_space_x = self.settings.screen_width - 1.2 * alien_width
+    def get_number_aliens_x(self, alien_width):
+        available_space_x = self.settings.screen_width - 6 * alien_width
         number_aliens_x = int(available_space_x / (1.2 * alien_width))
         return number_aliens_x
 
-    def create_alien(self, n, row_number):
-        alien = Alien(game=self.game)
-        alien.x = alien.rect.width * (1.2 * n + 1)  # x position
-        alien.y = alien.rect.height * (1.2 * row_number + 1)  # y position
-        alien.rect.x, alien.rect.y = alien.x, alien.y
-        self.add(alien)
+    def get_number_rows(self, ship_height, alien_height):
+        available_space_y = (self.settings.screen_height - (3 * alien_height) - ship_height)
+        number_rows = int(available_space_y / (1 * alien_height))
+        number_rows = 6
+        return number_rows        
 
-    def toggle_image(self):
-        pass
-    def get_number_rows(self, ship_height, alien_height): # Used to calculate the number of aliens tha can fit in a row
-        # and the number of rows that wil fit on the screen, respectively.
-        available_space_y = (self.settings.screen_height -
-                             (3 * alien_height) - ship_height)
-        number_rows = int(available_space_y / (1.2 * alien_height))
-        return number_rows
+    def reset(self):
+        # pass
+        self.aliens.empty()
+        self.create_fleet()
+        self.aliens_lasers.reset()
 
-    def reverse_fleet(self): # is called when the fleet of aliens reaches the edge of the screen. It changes the
-        # direction of the aliens' movement and drops them down one row
-        self.v.x *= -1
-        for alien in self.aliens:
-            alien.v.x *= -1
-            alien.y += self.settings.fleet_drop_speed
+    def create_alien(self, alien_number, row_number):
+        type = row_number // 2
+        alien = Alien(game=self.game, type=type, alien_number=alien_number)
 
-    def check_edges(self): # Use to determine if the fleet of aliens has reached the dge of the screen or the
-        # bottom of the screen or the edge of the screen
-        for alien in self.aliens:
-            if alien.check_edges(): return True
-        return False
+        # alien = Alien(game=self.game, type=0)
+        alien_width = alien.rect.width
 
-    def check_bottom(self):
-        for alien in self.aliens:
-            if alien.rect.bottom >= self.settings.screen_height: return True
-        return False
+        alien.x = alien_width + 1.5 * alien_width * alien_number 
+        alien.rect.x = alien.x
+        alien.rect.y = alien.rect.height + 1.2 * alien.rect.height * row_number 
+        self.aliens.add(alien)     
 
-    def update(self): # responsible for updating the position of the aliens and checking for collisions.
-        # is called every frame. The game_over() method is called to end the game.
-        for alien in self.aliens: alien.update()
-        if self.check_bottom():
-            self.game.game_over()
-        if self.check_edges():
-            self.reverse_fleet()
-        self.draw() # pygame draws each element in the group at the position defined by its rect attribute.
+    def create_fleet(self):
+        number_aliens_x = self.get_number_aliens_x(self.model_alien.rect.width) 
+        number_rows = self.get_number_rows(self.ship.rect.height, self.model_alien.rect.height)
+        for row_number in range(number_rows):
+            for alien_number in range(number_aliens_x):
+                   self.create_alien(alien_number, row_number)
 
-    def draw(self): # is used to draw the alien on the screen
-        for alien in self.aliens: alien.draw()
+    def check_fleet_edges(self):
+        for alien in self.aliens.sprites(): 
+            if alien.check_edges():
+                self.change_fleet_direction()
+                break
+
+    def check_fleet_bottom(self):
+        for alien in self.aliens.sprites():
+            if alien.check_bottom_or_ship(self.ship):
+                self.ship.hit()
+                break
+
+    def check_fleet_empty(self):
+        if len(self.aliens.sprites()) == 0:
+            print('Aliens all gone!')
+            self.game.reset()
+
+    def change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
+
+    def shoot_from_random_alien(self):
+        self.shoot_requests += 1
+        if self.shoot_requests % self.settings.aliens_shoot_every != 0:
+            return
+    
+        num_aliens = len(self.aliens.sprites())
+        alien_num = randint(0, num_aliens)
+        i = 0
+        for alien in self.aliens.sprites():
+            if i == alien_num:
+                self.aliens_lasers.shoot(game=self.game, x=alien.rect.centerx, y=alien.rect.bottom)
+            i += 1
 
 
-class Alien(Sprite):  # Subclass of pygame Sprite class. This is responsible for creating and updating individual alien
-    # object as a parameter and initializes several attributes, including the aliens image, position, and speed.
-    def __init__(self, game):  # It takes in the same 'game' object as a parameter
-        super().__init__()
-        self.game = game
-        self.screen = game.screen
-        self.settings = game.settings
-        self.ship = game.ship
-        self.v = Vector(game.settings.alien_speed_factor, 0)  # speed setting
+    def check_collisions(self):  
+        collisions = pg.sprite.groupcollide(self.aliens, self.ship_lasers, False, True)  
+        if collisions:
+            for alien in collisions:
+                alien.hit()
 
-        self.image = pg.image.load(self.settings.alien_image)
-        self.rect = self.image.get_rect()
+        collisions = pg.sprite.spritecollide(self.ship, self.aliens_lasers.lasers, True)
+        if collisions:
+            self.ship.hit()
 
-        self.rect.x, self.rect.y = self.rect.width, self.rect.height
-        self.x = float(self.rect.x)
-        self.y = float(self.rect.y)
+        # aliens_lasers collide with barrier?
+        # ship_lasers collide with barrier?
+        # aliens_lasers collide with ship_lasers ?
 
-    def check_edges(self):  # Is used to determine if the alien has reached the edge opf the screen and needs to change
-        # direction.
-        return self.rect.left <= 0 or self.rect.right >= self.settings.screen_width
 
-    def change_direction(self): self.v.x *= -1  # changes the direction of the alien's movement.
+    def update(self): 
+        self.check_fleet_edges()
+        self.check_fleet_bottom()
+        self.check_collisions()
+        self.check_fleet_empty()
+        self.shoot_from_random_alien()
+        for alien in self.aliens.sprites():
+            if alien.dead:      # set True once the explosion animation has completed
+                alien.remove()
+            alien.update()
+        self.aliens_lasers.update()
 
-    def update(self):  # updates the position of the alien based on its speed and direction.
-        self.y += self.v.y
-        self.x += self.v.x
-        self.rect.x, self.rect.y = self.x, self.y
-
-    def draw(self): self.screen.blit(self.image, self.rect)  # draws the alien on the screen.
+    def draw(self): 
+        for alien in self.aliens.sprites(): 
+            alien.draw() 

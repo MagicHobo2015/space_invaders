@@ -1,6 +1,6 @@
 import pygame as pg
 import os
-import settings
+from settings import Settings
 
 
 class GameStats:
