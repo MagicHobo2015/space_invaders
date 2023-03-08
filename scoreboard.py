@@ -63,7 +63,6 @@ class Scoreboard:
         # Draw the text surface on the screen surface
         self.screen.blit(self.score_text, (text_x, text_y))
 
-
     def check_high_score(self):
         """Check to see if there's a new high score."""
         if self.stats.score > self.stats.high_score:

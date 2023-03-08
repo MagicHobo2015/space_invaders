@@ -43,6 +43,8 @@ class Aliens:
         alien.rect.x, alien.rect.y = alien.x, alien.y
         self.add(alien)
 
+    def toggle_image(self):
+        pass
     def get_number_rows(self, ship_height, alien_height): # Used to calculate the number of aliens tha can fit in a row
         # and the number of rows that wil fit on the screen, respectively.
         available_space_y = (self.settings.screen_height -
