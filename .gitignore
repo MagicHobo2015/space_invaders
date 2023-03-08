@@ -3,3 +3,4 @@
 
 # ignore macos stuff
 __MACOSX/
+__*/
