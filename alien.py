@@ -8,7 +8,7 @@ from timer import Timer
 
 
 class Alien(Sprite): 
-    alien_images = [[pg.transform.rotozoom(pg.image.load(f'images/alien_03-{n}.png'), 0, 2) for n in range(2)],
+    alien_images = [[pg.transform.rotozoom(pg.image.load(f'images/alien__0{n}.png'), 0, 0.7) for n in range(2)],
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__1{n}.png'), 0, 0.7) for n in range(2)],
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__2{n}.png'), 0, 0.7) for n in range(2)]]
 
