@@ -17,6 +17,10 @@ class Settings():
         self.title_space_text = WHITE
         self.title_invaders_text = GREEN
 
+        self.alien_one = ['images/alien__00.png', 'images/alien__01.png']
+        self.alien_two = ['images/alien__10.png', 'images/alien__11.png']
+        self.alien_three = ['images/alien__20.png', 'images/alien__21.png']
+        self.motherShip = 'images/motherShip.png'
 
 # # TODO: test laser with a really wide laser
         self.laser_width = 5
