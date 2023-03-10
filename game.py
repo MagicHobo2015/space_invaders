@@ -20,6 +20,13 @@ class Game:
         self.screen = pg.display.set_mode(size=size)
         pg.display.set_caption("Alien Invasion")
 
+        
+        self.alien_one = ['images/alien__00.png', 'images/alien__01.png']
+        self.alien_two = ['images/alien__10.png', 'images/alien__11.png']
+        self.alien_three = ['images/alien__20.png', 'images/alien__21.png']
+        self.motherShip = 'images/motherShip.png'
+
+
         self.finished = False
         self.game_active = False
         self.stats = GameStats(game=self)
@@ -134,13 +141,6 @@ class Game:
         # display the text on the screen
         self.screen.blit(space_text, space_text_rect)
         self.screen.blit(invaders_text, invaders_text_rect)
-        
-        # just hold the alien image info here.
-        self.alien_one = ['images/alien__00.png', 'images/alien__01.png']
-        self.alien_two = ['images/alien__10.png', 'images/alien__11.png']
-        self.alien_three = ['images/alien__20.png', 'images/alien__21.png']
-        self.motherShip = 'images/motherShip.png'
-        
 
         # Load and display alien sprites along with their points string
         alien_one_image = pg.image.load(self.alien_one[0]).convert_alpha()

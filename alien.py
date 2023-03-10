@@ -12,19 +12,19 @@ class Alien(Sprite):
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__1{n}.png'), 0, 0.7) for n in range(2)],
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__2{n}.png'), 0, 0.7) for n in range(2)]]
 
-    aelist0 = [10.1, 10.2, 10.3]
-    aelist1 = [20, 20, 'blank']
-    aelist2 = [30, 30, 'blank']
-    alien_explosion_images = [[pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist2],
-                              [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist1] ,
-                              [pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion_{el}.png'), 0, 1.5) for el in aelist0]]
+    aelist0 = [1, 2, 3]
+    aelist1 = [20.1, 20.2, 20.3]
+    aelist2 = [40.1, 40.2, 40.3]
+    alien_explosion_images = [[pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion10.{el}.png'), 0, 1.5) for el in range(1,3)],
+                              [pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion20.{el}.png'), 0, 1.5) for el in range(1,3)] ,
+                              [pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion40.{el}.png'), 0, 1.5) for el in range(1,3)]]
  
 
     def __init__(self, game, type, alien_number):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.image = pg.image.load('images/alien0.bmp')
+        self.image = pg.image.load('images/alien__00.png')
         self.rect = self.image.get_rect()
         self.rect.y = self.rect.height
         self.x = float(self.rect.x)

@@ -4,3 +4,5 @@
 # ignore macos stuff
 __MACOSX/
 __*/
+__pycache__/
+**/__pycache__
