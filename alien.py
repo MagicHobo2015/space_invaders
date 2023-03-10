@@ -12,9 +12,7 @@ class Alien(Sprite):
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__1{n}.png'), 0, 0.7) for n in range(2)],
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__2{n}.png'), 0, 0.7) for n in range(2)]]
 
-    aelist0 = [1, 2, 3]
-    aelist1 = [20.1, 20.2, 20.3]
-    aelist2 = [40.1, 40.2, 40.3]
+ 
     alien_explosion_images = [[pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion10.{el}.png'), 0, 1.5) for el in range(1,3)],
                               [pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion20.{el}.png'), 0, 1.5) for el in range(1,3)] ,
                               [pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion40.{el}.png'), 0, 1.5) for el in range(1,3)]]

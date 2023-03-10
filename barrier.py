@@ -12,22 +12,26 @@ class Barrier(Sprite):    # not a real Barrier class -- should be made up of man
                       pg.transform.rotozoom(pg.image.load("images/shield-2.png"), 0, 4),
                       pg.transform.rotozoom(pg.image.load("images/shield-1.png"), 0, 4)]
 
-    barrier_explosions = [pg.image.load(f'images/explosions/shield_explosion_{num}.png') for num in range(1,3)]
+    barrier_explosions = [pg.transform.rotozoom(pg.image.load(f'images/explosions/shield_explosion_1.png'), 0, 4),
+                          pg.transform.rotozoom(pg.image.load(f'images/explosions/shield_explosion_2.png'), 0, 4),
+                          pg.transform.rotozoom(pg.image.load(f'images/explosions/shield_explosion_3.png'), 0, 4)]
+     
 
     def __init__(self, game, rect):
         super().__init__()
         self.screen = game.screen
         self.rect = rect
         self.settings = game.settings
-        self.barrier_life = 5
+        self.barrier_life = 4
         self.game = game
         self.dying = False
-        self.timer_explosion = Timer(self.barrier_explosions, delay=300, is_loop=False)
-        
+        self.timer_explosion = Timer(self.barrier_explosions, start_index=0, delay=200, is_loop=False)
+       
         
     def hit(self): # TODO: change to use tiny Sprites
-        if self.barrier_life < 0:
+        if self.barrier_life == 0 and not self.dying:
             self.dying = True
+            self.timer_explosion.reset()
         else:
             self.barrier_life -= 1
 
@@ -35,11 +39,13 @@ class Barrier(Sprite):    # not a real Barrier class -- should be made up of man
         # TODO: change to use tiny Sprites to decide if a collision occurred
         if pg.sprite.spritecollide(self, self.game.aliens.aliens_lasers.lasers, True):
             self.hit()
+        elif pg.sprite.spritecollide(self, self.game.ship_lasers.lasers, True):
+            self.hit()
         self.draw()
 
     def draw(self):
         if not self.dying:
-            self.screen.blit(self.barrier_images[self.barrier_life-1], self.rect)
+            self.screen.blit(self.barrier_images[self.barrier_life], self.rect)
         elif self.dying:
             image = self.timer_explosion.image()
             self.screen.blit(image, self.rect)
@@ -63,7 +69,9 @@ class Barriers:
         self.create_barriers()
 
     def update(self):
-        for barrier in self.barriers: 
+        for barrier in self.barriers:
+            if barrier.dying and barrier.timer_explosion.is_expired():
+                self.barriers.remove(barrier)
             barrier.update()
 
     def draw(self):
