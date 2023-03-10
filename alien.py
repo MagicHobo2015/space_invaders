@@ -12,12 +12,12 @@ class Alien(Sprite):
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__1{n}.png'), 0, 0.7) for n in range(2)],
                     [pg.transform.rotozoom(pg.image.load(f'images/alien__2{n}.png'), 0, 0.7) for n in range(2)]]
 
-    aelist0 = [10, 10, 'blank']
+    aelist0 = [10.1, 10.2, 10.3]
     aelist1 = [20, 20, 'blank']
     aelist2 = [30, 30, 'blank']
     alien_explosion_images = [[pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist2],
                               [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist1] ,
-                              [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist0]]
+                              [pg.transform.rotozoom(pg.image.load(f'images/explosions/explosion_{el}.png'), 0, 1.5) for el in aelist0]]
  
 
     def __init__(self, game, type, alien_number):
