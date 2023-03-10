@@ -113,6 +113,14 @@ class Game:
         self.ship.reset()
         self.aliens.reset()
 
+    def death_reset(self):
+        print('Resetting game...')
+        # self.lasers.reset()    # handled by ship for ship_lasers and by aliens for alien_lasers
+        self.barriers.reset()
+        self.ship.reset()
+        self.aliens.reset()
+        self.scoreboard.reset()
+
     def game_over(self):
         print('All ships gone: game over!')
         self.finished = True
@@ -189,10 +197,10 @@ class Game:
         self.screen.blit(mother_ship_points_text, mother_ship_points_rect)
 
         # create a Play button and position it on the screen
-        self.play_button = Button(self, "Play", x=-350)
+        self.play_button = Button(self, "Play", x=-300)
 
         # create a High Score button and position it to the right of the Play button
-        self.high_score_button = Button(self, "High Score", x=-650)
+        self.high_score_button = Button(self, "High Score", x=-700)
         self.play_button.draw_button()
         self.high_score_button.draw_button()
         # update the display
@@ -220,8 +228,8 @@ class Game:
 
     def play(self):
         self.sound.play_bg()
-        self.play_button = Button(self, "Play", x=-300)
-        self.high_score_button = Button(self, "High Score", x=-700)
+        self.play_button = Button(self, "Play", x=-280)
+        self.high_score_button = Button(self, "High Score", x=-720)
         self.return_menu_button = Button(self, "Main Menu", x=-500)
         self.title_menu()
         while not self.finished:

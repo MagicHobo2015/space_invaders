@@ -71,7 +71,7 @@ class Ship(Sprite):  # TODO -- change to use YOUR OWN IMAGE for the ship AND its
         self.ships_left -= 1
         self.draw_ship_lives()
         print(f'Ship is dead! Only {self.ships_left} ships left')
-        self.game.reset() if self.ships_left > 0 else self.game.game_over()
+        self.game.death_reset() if self.ships_left > 0 else self.game.game_over()
 
     def update(self):
         if self.timer == self.timer_explosion and self.timer.is_expired():
