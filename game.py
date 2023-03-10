@@ -112,6 +112,8 @@ class Game:
         self.barriers.reset()
         self.ship.reset()
         self.aliens.reset()
+        self.stats.level += 1
+        self.scoreboard.prep_level()
 
     def death_reset(self):
         print('Resetting game...')
