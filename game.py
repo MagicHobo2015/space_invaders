@@ -68,6 +68,8 @@ class Game:
                 mouse_pos = pg.mouse.get_pos()
                 if not self.game_active:
                     self.check_play_button(mouse_pos)
+                    self.check_high_score(mouse_pos)
+                    self.check_return_button(mouse_pos)
 
     def check_play_button(self, mouse_pos):
         """Start a new game when the player clicks Play."""
@@ -88,6 +90,16 @@ class Game:
             self.ship.center_ship()
             self.settings.initialize_speed_settings()
 
+    def check_high_score(self, mouse_pos):
+        """Open up the high score menu."""
+        if not self.game_active and self.high_score_button.rect.collidepoint(mouse_pos):
+            self.high_score_menu()
+
+    def check_return_button(self, mouse_pos):
+        """Open up the title menu again."""
+        if not self.game_active and self.return_menu_button.rect.collidepoint(mouse_pos):
+            self.title_menu()
+
     def update_score_text(self):
         """Update the score text based on the current score"""
         # Render the text surface with the score string
@@ -101,8 +113,16 @@ class Game:
         # Draw the text surface on the screen surface
         self.screen.blit(self.score_text, (text_x, text_y))
 
-
     def reset(self):
+        print('Resetting game...')
+        # self.lasers.reset()    # handled by ship for ship_lasers and by aliens for alien_lasers
+        self.barriers.reset()
+        self.ship.reset()
+        self.aliens.reset()
+        self.stats.level += 1
+        self.scoreboard.prep_level()
+
+    def death_reset(self):
         print('Resetting game...')
         # self.lasers.reset()    # handled by ship for ship_lasers and by aliens for alien_lasers
         self.barriers.reset()
@@ -120,7 +140,6 @@ class Game:
         sys.exit()
 
     def title_menu(self):
-
         # create a font object
         self.screen.fill(self.settings.title_bg_color)
         space_font = pg.font.SysFont(None, 200)
@@ -153,8 +172,9 @@ class Game:
         alien_one_points_rect.left = alien_one_rect.right + 10
         alien_one_points_rect.centery = alien_one_rect.centery
         self.screen.blit(alien_one_points_text, alien_one_points_rect)
-
+        
         alien_two_image = pg.image.load(self.alien_two[0]).convert_alpha()
+        
         alien_two_rect = alien_two_image.get_rect()
         alien_two_rect.centerx = self.screen.get_rect().centerx - 100
         alien_two_rect.top = invaders_text_rect.bottom + 125
@@ -188,22 +208,43 @@ class Game:
         self.screen.blit(mother_ship_points_text, mother_ship_points_rect)
 
         # create a Play button and position it on the screen
-        self.play_button = Button(self, "Play")
-        self.play_button.rect.centerx = self.screen.get_rect().centerx
-        self.play_button.rect.bottom = self.screen.get_rect().bottom + 300
+        self.play_button = Button(self, "Play", x=-300)
 
+        # create a High Score button and position it to the right of the Play button
+        self.high_score_button = Button(self, "High Score", x=-700)
+        self.play_button.draw_button()
+        self.high_score_button.draw_button()
         # update the display
+        pg.display.flip()
+
+    def high_score_menu(self):
+        self.screen.fill(self.settings.title_bg_color)
+        self.return_menu_button = Button(self, "Main Menu", x=-500)
+        points_font = pg.font.SysFont(None, 50)
+        self.return_menu_button.draw_button()
+        high_score_font = pg.font.SysFont(None, 100)
+        high_score_text = high_score_font.render("High Score: ", True, self.settings.title_space_text)
+        high_score_rect = high_score_text.get_rect(center=self.screen.get_rect().center)
+        high_score_rect.centery -= 295
+        self.screen.blit(high_score_text, high_score_rect)
+        self.current_high_score = self.stats.load_high_score()
+        current_high_score_font = pg.font.SysFont(None, 75)
+        current_high_score_text = current_high_score_font.render(str(self.current_high_score), True,
+                                                                 self.settings.title_space_text)
+        current_high_score_rect = current_high_score_text.get_rect(center=self.screen.get_rect().center)
+        current_high_score_rect.centery -= 200
+        self.screen.blit(current_high_score_text, current_high_score_rect)
+
         pg.display.flip()
 
     def play(self):
         self.sound.play_bg()
-        self.play_button = Button(self, "Play")
-
+        self.play_button = Button(self, "Play", x=-280)
+        self.high_score_button = Button(self, "High Score", x=-720)
+        self.return_menu_button = Button(self, "Main Menu", x=-500)
+        self.title_menu()
         while not self.finished:
             self.handle_events()
-
-            if not self.game_active:
-                self.play_button.draw_button()
 
             if self.play_button.rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0]:
                 # Reset the game statistics()
@@ -213,6 +254,12 @@ class Game:
                 self.ship_lasers.lasers.empty()
                 self.alien_lasers.lasers.empty()
                 self.update_score_text()
+
+            if self.high_score_button.rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0]:
+                self.high_score_menu()
+
+            if self.return_menu_button.rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0]:
+                self.title_menu()
 
             if self.game_active:
                 self.screen.fill(self.settings.bg_color)

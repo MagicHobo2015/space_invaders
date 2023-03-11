@@ -1,11 +1,12 @@
 import pygame as pg
 from laser import LaserType
 import time
+import wave
 
 
 class Sound:
     def __init__(self, bg_music):
-        pg.mixer.init()
+        pg.mixer.init(frequency=88200)
         pg.mixer.music.load(bg_music)
         pg.mixer.music.set_volume(0.1)
         alienlaser_sound = pg.mixer.Sound('sounds/alienlaser.wav')
@@ -17,6 +18,25 @@ class Sound:
         self.sounds = {'alienlaser': alienlaser_sound, 'photontorpedo': photontorpedo_sound,
                        'gameover': gameover_sound}
 
+        self.bg_music = bg_music
+
+
+    def speed_up_music(self):
+        # Use subprocess to call an external tool (e.g. sox) to speed up the music file
+        # Replace "sox" with the name of the command-line tool you want to use
+        subprocess.call(['sox', self.bg_music, 'temp_music.wav', 'tempo', '1.2'])
+
+        # Load the modified music file
+        pg.mixer.music.load('temp_music.wav')
+
+        # Remove the temporary file
+        os.remove('temp_music.wav')
+
+    def reset_music_speed(self):
+        pg.mixer.init(frequency=22050)
+        pg.mixer.music.load(self.bg_music)
+        pg.mixer.music.stop()
+        pg.mixer.music.play()
 
     def play_bg(self):
         pg.mixer.music.play(-1, 0.0)

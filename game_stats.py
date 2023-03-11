@@ -10,7 +10,7 @@ class GameStats:
         """Initialize statistics."""
         self.settings = game.settings
         self.reset_stats()
-
+        self.level = 1
         # High score should never be reset.
         # Load the high score from a file if it exists.
         self.high_score = self.load_high_score()

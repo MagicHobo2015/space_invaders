@@ -80,6 +80,7 @@ class Aliens:
         self.shoot_requests = 0
         self.ship = game.ship
         self.create_fleet()
+        self.previous_alien_speed = self.settings.alien_speed
 
     def get_number_aliens_x(self, alien_width):
         available_space_x = self.settings.screen_width - 6 * alien_width
@@ -152,7 +153,6 @@ class Aliens:
                 self.aliens_lasers.shoot(game=self.game, x=alien.rect.centerx, y=alien.rect.bottom)
             i += 1
 
-
     def check_collisions(self):  
         collisions = pg.sprite.groupcollide(self.aliens, self.ship_lasers, False, True)  
         if collisions:
@@ -167,8 +167,11 @@ class Aliens:
         # ship_lasers collide with barrier?
         # aliens_lasers collide with ship_lasers ?
 
-
-    def update(self): 
+    def update(self):
+        if self.settings.alien_speed > self.previous_alien_speed:
+            speed_up_music()
+            print("Music is being updated.")
+            self.previous_alien_speed = self.settings.alien_speed
         self.check_fleet_edges()
         self.check_fleet_bottom()
         self.check_collisions()
