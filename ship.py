@@ -3,7 +3,7 @@ from pygame.sprite import Sprite
 from laser import Lasers
 from vector import Vector
 from sys import exit
-from timer import  Timer
+from timer import Timer
 from utils import Util
 
 class Ship(Sprite):  # TODO -- change to use YOUR OWN IMAGE for the ship AND its explosion
@@ -33,7 +33,7 @@ class Ship(Sprite):  # TODO -- change to use YOUR OWN IMAGE for the ship AND its
         self.lasers_attempted = 0
 
         self.timer_normal = Timer(image_list=Ship.ship_images)
-        self.timer_explosion = Timer(image_list=Ship.ship_explosion_images, delay=200, is_loop=False)  
+        self.timer_explosion = Timer(image_list=Ship.ship_explosion_images, delay=200, is_loop=False)
         self.timer = self.timer_normal    
         self.dying = self.dead = False
         self.stats = game.stats
@@ -66,6 +66,9 @@ class Ship(Sprite):  # TODO -- change to use YOUR OWN IMAGE for the ship AND its
             print('SHIP IS HIT !!!!!!!!!!!!!!!!!!!!!')
             self.dying = True 
             self.timer = self.timer_explosion
+
+    def projectile_collision(self):
+        self.timer = self.timer_new_explosion
 
     def really_dead(self):
         self.ships_left -= 1

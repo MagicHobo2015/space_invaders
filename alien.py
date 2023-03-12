@@ -18,7 +18,6 @@ class Alien(Sprite):
     alien_explosion_images = [[pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist2],
                               [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist1] ,
                               [pg.transform.rotozoom(pg.image.load(f'images/explosion_{el}.png'), 0, 1.5) for el in aelist0]]
- 
 
     def __init__(self, game, type, alien_number):
         super().__init__()
@@ -35,7 +34,10 @@ class Alien(Sprite):
         start_index = 0 if alien_number % 2 == 0 else 1
         self.timer_normal = Timer(Alien.alien_images[type], start_index=start_index, delay=300)
         self.timer_explosion = Timer(Alien.alien_explosion_images[type], delay=300, is_loop=False)
-        self.timer = self.timer_normal                                    
+        self.timer = self.timer_normal
+
+        # I created this one below
+
 
     def check_edges(self): 
         screen_rect = self.screen.get_rect()
@@ -165,6 +167,11 @@ class Aliens:
         if collisions:
             self.ship.hit()
 
+        collisions = pg.sprite.groupcollide(self.aliens_lasers.lasers, self.ship_lasers, True, True)
+        if collisions:
+            for laser in collisions.keys():
+                laser.projectile_collision()
+
         # aliens_lasers collide with barrier?
         # ship_lasers collide with barrier?
         # aliens_lasers collide with ship_lasers ?
@@ -185,6 +192,6 @@ class Aliens:
             alien.update()
         self.aliens_lasers.update()
 
-    def draw(self): 
+    def draw(self):
         for alien in self.aliens.sprites(): 
             alien.draw() 
