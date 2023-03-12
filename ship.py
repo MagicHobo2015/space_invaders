@@ -7,9 +7,10 @@ from timer import Timer
 from utils import Util
 
 class Ship(Sprite):  # TODO -- change to use YOUR OWN IMAGE for the ship AND its explosion
-    ship_images = [pg.transform.rotozoom(pg.image.load(f'images/spaceship_classic.png'), 0, 1.0)]
-    ship_hit_images = [pg.transform.rotozoom(pg.image.load(f'images/ship_fields{n}.png'), 0, 1.0) for n in range(9)]
-    ship_explosion_images = [pg.transform.rotozoom(pg.image.load(f'images/ship_explode{n}.png'), 0, 1.0) for n in range(6)]
+
+    ship_images = [pg.transform.rotozoom(pg.image.load(f'images/ship.png'), 0, 3)]
+    # ship_hit_images = [pg.transform.rotozoom(pg.image.load(f'images/ship_fields{n}.png'), 0, 1.0) for n in range(9)]
+    ship_explosion_images = [pg.transform.rotozoom(pg.image.load(f'images/ship_explode{n}.png'), 0, 3.0) for n in range(6)]
 
     def __init__(self, game):
         super().__init__()
@@ -18,8 +19,10 @@ class Ship(Sprite):  # TODO -- change to use YOUR OWN IMAGE for the ship AND its
         self.settings = game.settings
         self.sound = game.sound
         self.ships_left = game.settings.ship_limit  
-        self.image = pg.image.load('images/spaceship_classic.png')
-        self.ship_life_image = pg.image.load('images/spaceship_classic.png')
+
+        self.image = pg.transform.rotozoom(pg.image.load('images/ship.png'), 0, 3)
+        self.ship_life_image = pg.image.load('images/ship.png')
+        
         self.rect = self.image.get_rect()
         self.screen_rect = game.screen.get_rect()
         self.posn = self.center_ship()    # posn is the centerx, bottom of the rect, not left, top

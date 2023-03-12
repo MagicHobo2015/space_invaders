@@ -20,6 +20,13 @@ class Game:
         self.screen = pg.display.set_mode(size=size)
         pg.display.set_caption("Alien Invasion")
 
+        
+        self.alien_one = ['images/alien__00.png', 'images/alien__01.png']
+        self.alien_two = ['images/alien__10.png', 'images/alien__11.png']
+        self.alien_three = ['images/alien__20.png', 'images/alien__21.png']
+        self.motherShip = 'images/motherShip.png'
+
+
         self.finished = False
         self.game_active = False
         self.stats = GameStats(game=self)
@@ -155,7 +162,7 @@ class Game:
         self.screen.blit(invaders_text, invaders_text_rect)
 
         # Load and display alien sprites along with their points string
-        alien_one_image = pg.image.load(self.settings.alien_one[0]).convert_alpha()
+        alien_one_image = pg.image.load(self.alien_one[0]).convert_alpha()
         alien_one_rect = alien_one_image.get_rect()
         alien_one_rect.centerx = self.screen.get_rect().centerx - 100  # Move to the left by 100
         alien_one_rect.top = invaders_text_rect.bottom + 50   # below the "INVADERS" text from the title screen
@@ -165,7 +172,9 @@ class Game:
         alien_one_points_rect.left = alien_one_rect.right + 10
         alien_one_points_rect.centery = alien_one_rect.centery
         self.screen.blit(alien_one_points_text, alien_one_points_rect)
-        alien_two_image = pg.image.load(self.settings.alien_two[0]).convert_alpha()
+        
+        alien_two_image = pg.image.load(self.alien_two[0]).convert_alpha()
+        
         alien_two_rect = alien_two_image.get_rect()
         alien_two_rect.centerx = self.screen.get_rect().centerx - 100
         alien_two_rect.top = invaders_text_rect.bottom + 125
@@ -176,7 +185,7 @@ class Game:
         alien_two_points_rect.centery = alien_two_rect.centery
         self.screen.blit(alien_two_points_text, alien_two_points_rect)
 
-        alien_three_image = pg.image.load(self.settings.alien_three[0]).convert_alpha()
+        alien_three_image = pg.image.load(self.alien_three[0]).convert_alpha()
         alien_three_rect = alien_three_image.get_rect()
         alien_three_rect.centerx = self.screen.get_rect().centerx - 100
         alien_three_rect.top = invaders_text_rect.bottom + 200
@@ -187,7 +196,7 @@ class Game:
         alien_three_points_rect.centery = alien_three_rect.centery
         self.screen.blit(alien_three_points_text, alien_three_points_rect)
 
-        mother_ship_image = pg.image.load(self.settings.motherShip).convert_alpha()
+        mother_ship_image = pg.transform.rotozoom(pg.image.load(self.motherShip).convert_alpha(), 0, 2.5)
         mother_ship_rect = mother_ship_image.get_rect()
         mother_ship_rect.centerx = self.screen.get_rect().centerx - 100
         mother_ship_rect.top = invaders_text_rect.bottom + 275
