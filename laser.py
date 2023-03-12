@@ -36,6 +36,8 @@ class Laser(Sprite):   # TODO -- change to use YOUR OWN IMAGES for ship, alien l
     alien_laser_images = [pg.transform.rotozoom(pg.image.load(f'images/alienlaser{n}.png'), 0, 1) for n in range(2)]
     ship_laser_images = [pg.transform.rotozoom(pg.image.load(f'images/laser_{n}.png'), 0, 1) for n in range(2)]
     laser_images = {LaserType.ALIEN: alien_laser_images, LaserType.SHIP: ship_laser_images}
+    new_projectile_explosion = [pg.transform.rotozoom(pg.image.load(f'images/new_explosion{n}.png'), 0, 1) for n in
+                                range(1, 7)]
 
     def __init__(self, settings, screen, x, y, sound, type):
         super().__init__()
@@ -49,6 +51,7 @@ class Laser(Sprite):   # TODO -- change to use YOUR OWN IMAGES for ship, alien l
         self.speed = settings.laser_speed
         imagelist = Laser.laser_images[type]
         self.timer = Timer(image_list=imagelist, delay=200)
+        self.timer_new_explosion = Timer(image_list=Laser.new_projectile_explosion, delay=200, is_loop=False)
         sound.shoot_laser(type=self.type)
 
     def update(self):
@@ -61,4 +64,11 @@ class Laser(Sprite):   # TODO -- change to use YOUR OWN IMAGES for ship, alien l
         rect = image.get_rect()
         rect.left, rect.top = self.rect.left, self.rect.top
         self.screen.blit(image, rect)
+
+    def projectile_collision(self):
+        print("projectile_collision has been called")
+        # explosion_image = self.timer_new_explosion.image()
+        # rect = explosion_image.get_rect()
+        # rect.left, rect.top = self.rect.left, self.rect.top
+        # self.screen.blit(explosion_image, rect)
 
