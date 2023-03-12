@@ -9,7 +9,10 @@ from vector import Vector
 from barrier import Barriers
 from button import Button
 from game_stats import GameStats
+from mother_ship import Mothership
 import sys 
+import random
+
 
 
 class Game:
@@ -39,6 +42,7 @@ class Game:
         self.barriers = Barriers(game=self)
         self.ship = Ship(game=self)
         self.aliens = Aliens(game=self)
+        self.mother_ship = Mothership(self)
         self.settings.initialize_speed_settings()
         self.score_font = pg.font.SysFont(None, 48)
         self.score_text = None
@@ -119,6 +123,7 @@ class Game:
         self.barriers.reset()
         self.ship.reset()
         self.aliens.reset()
+        self.mother_ship.reset_mother()
         self.stats.level += 1
         self.scoreboard.prep_level()
 
@@ -236,6 +241,7 @@ class Game:
         self.screen.blit(current_high_score_text, current_high_score_rect)
 
         pg.display.flip()
+        
 
     def play(self):
         self.sound.play_bg()
@@ -266,6 +272,7 @@ class Game:
                 self.ship.update()
                 self.aliens.update()
                 self.barriers.update()
+                self.mother_ship.update()
                 # self.lasers.update()    # handled by ship for ship_lasers and by alien for alien_lasers
                 self.scoreboard.update()
                 self.scoreboard.show_score()
